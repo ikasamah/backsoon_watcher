@@ -1,0 +1,7 @@
+Apple Storeが We'll back soon... の時に使うと復帰したときに通知してくれます.
+これを使って Apple の新製品をいち早くゲットしましょう.
+
+Growl の Python モジュールをインストールしておくと Growl で通知してくれると思います.
+詳しくは以下のURLを参照してください.
+
+http://growl.info/documentation/developer/python-support.php
