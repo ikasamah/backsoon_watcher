@@ -9,6 +9,7 @@
 import os
 import sys
 import time
+import subprocess
 import urllib2
 from optparse import OptionParser
 
@@ -41,6 +42,7 @@ def watch(url, interval):
                 current = http_get(url)
                 if current != base:
                     notify()
+                    open_url_by_browser(url)
                     break
                 sys.stdout.write("tries: %d\r" % tries)
                 sys.stdout.flush()
@@ -57,7 +59,16 @@ def http_get(url):
 
 def notify():
     print 'Apple Store is Now Live!!!'
+    notify_say()
     notify_growl()
+
+def notify_say():
+    cmd = '/usr/bin/say Apple Store is Now Live!'
+    subprocess.Popen(cmd, shell=True)
+
+def open_url_by_browser(url):
+    cmd = '/usr/bin/open %s' % url
+    subprocess.Popen(cmd, shell=True)
 
 def notify_growl():
     if not GROWL_ENABLED: return
