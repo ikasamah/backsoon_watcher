@@ -11,6 +11,7 @@ import sys
 import time
 import subprocess
 import urllib2
+import difflib
 from optparse import OptionParser
 
 try:
@@ -41,8 +42,6 @@ def watch(url, interval):
                 tries += 1
                 current = http_get(url)
                 if current != base:
-                    notify()
-                    open_url_by_browser(url)
                     break
                 sys.stdout.write("tries: %d\r" % tries)
                 sys.stdout.flush()
@@ -53,6 +52,9 @@ def watch(url, interval):
             base = http_get(url)
             print 'url: %s, size: %d byte' % (url, len(base))
         time.sleep(interval)
+    notify()
+    print_diff(base, current)
+    open_url_by_browser(url)
 
 def http_get(url):
     return urllib2.urlopen(url).read()
@@ -66,10 +68,6 @@ def notify_say():
     cmd = '/usr/bin/say Apple Store is Now Live!'
     subprocess.Popen(cmd, shell=True)
 
-def open_url_by_browser(url):
-    cmd = '/usr/bin/open %s' % url
-    subprocess.Popen(cmd, shell=True)
-
 def notify_growl():
     if not GROWL_ENABLED: return
     g = Growl.GrowlNotifier(
@@ -81,6 +79,16 @@ def notify_growl():
         title='Apple Store is Now Live',
         description=u'開いた！！！',
         sticky=True)
+
+def open_url_by_browser(url):
+    cmd = '/usr/bin/open %s' % url
+    subprocess.Popen(cmd, shell=True)
+
+def print_diff(base, current):
+    for buf in difflib.unified_diff(
+            base.splitlines(),
+            current.splitlines()):
+        print buf
 
 
 if __name__ == '__main__':
