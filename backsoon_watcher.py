@@ -14,12 +14,6 @@ import urllib2
 import difflib
 from optparse import OptionParser
 
-try:
-    import Growl
-    GROWL_ENABLED = True
-except ImportError:
-    GROWL_ENABLED = False
-
 DEFAULT_URL = 'http://store.apple.com/jp'
 
 def main():
@@ -57,7 +51,12 @@ def watch(url, interval):
     open_url_by_browser(url)
 
 def http_get(url):
-    return urllib2.urlopen(url).read()
+    try:
+        return urllib2.urlopen(url).read()
+    except urllib2.HTTPError, e:
+        if e.code == 404:
+            return e.read()
+        raise e
 
 def notify():
     print 'Apple Store is Now Live!!!'
@@ -69,7 +68,10 @@ def notify_say():
     subprocess.Popen(cmd, shell=True)
 
 def notify_growl():
-    if not GROWL_ENABLED: return
+    try:
+        import Glowl
+    except ImportError:
+        return
     g = Growl.GrowlNotifier(
         applicationName=os.path.basename(__file__),
         notifications=['Live'])
